@@ -1,0 +1,2465 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hospital Management System</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+</head>
+<body>
+    <div class="header">
+        <div class="logo" id="hospitalName">Hospital Management System</div>
+        <div class="toggle-container">
+            <span>Night Mode</span>
+            <label class="toggle-switch">
+                <input type="checkbox" id="darkModeToggle">
+                <span class="slider"></span>
+            </label>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="sidebar" id="sidebar">
+            <button class="hide-menu-btn" id="hideMenuBtn" title="Collapse Menu">
+                <i class="fas fa-chevron-left"></i>
+            </button>
+            <div class="nav-menu" id="navMenu">
+                <div class="nav-item">
+                    <a href="#" class="nav-link active" onclick="showDashboard()">
+                        <i class="fas fa-tachometer-alt"></i>
+                        <span>Dashboard</span>
+                    </a>
+                </div>
+                <div class="nav-item">
+                    <a href="#" class="nav-link" onclick="showSection('patient-management')">
+                        <i class="fas fa-procedures"></i>
+                        <span>Patient Management</span>
+                    </a>
+                </div>
+                <div class="nav-item">
+                    <a href="#" class="nav-link" onclick="showSection('doctor-management')">
+                        <i class="fas fa-user-md"></i>
+                        <span>Doctor Management</span>
+                    </a>
+                </div>
+                <div class="nav-item">
+                    <a href="#" class="nav-link" onclick="showSection('appointment-management')">
+                        <i class="fas fa-calendar-check"></i>
+                        <span>Appointment Management</span>
+                    </a>
+                </div>
+                <div class="nav-item">
+                    <a href="#" class="nav-link" onclick="showSection('billing-management')">
+                        <i class="fas fa-file-invoice-dollar"></i>
+                        <span>Billing Management</span>
+                    </a>
+                </div>
+                <div class="nav-item">
+                    <a href="#" class="nav-link" onclick="showSection('medical-records')">
+                        <i class="fas fa-file-medical"></i>
+                        <span>Medical Records</span>
+                    </a>
+                </div>
+                <div class="nav-item">
+                    <a href="#" class="nav-link" onclick="showSection('reports-analytics')">
+                        <i class="fas fa-chart-bar"></i>
+                        <span>Reports & Analytics</span>
+                    </a>
+                </div>
+                <div class="nav-item">
+                    <a href="#" class="nav-link" onclick="showSection('department-management')">
+                        <i class="fas fa-sitemap"></i>
+                        <span>Department Management</span>
+                    </a>
+                </div>
+                <div class="nav-item">
+                    <a href="#" class="nav-link" onclick="showSection('staff-management')">
+                        <i class="fas fa-users"></i>
+                        <span>Staff Management</span>
+                    </a>
+                </div>
+                <div class="nav-item">
+                    <a href="#" class="nav-link" onclick="showSection('insurance-management')">
+                        <i class="fas fa-handshake"></i>
+                        <span>Insurance Management</span>
+                    </a>
+                </div>
+                <div class="nav-item">
+                    <a href="#" class="nav-link" onclick="showSection('test-management')">
+                        <i class="fas fa-flask"></i>
+                        <span>Test Management</span>
+                    </a>
+                </div>
+                <div class="nav-item">
+                    <a href="#" class="nav-link" onclick="showSection('inventory-management')">
+                        <i class="fas fa-boxes"></i>
+                        <span>Inventory Management</span>
+                    </a>
+                </div>
+                <div class="nav-item">
+                    <a href="#" class="nav-link" onclick="logout()">
+                        <i class="fas fa-sign-out-alt"></i>
+                        <span>Exit</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="main-content" id="mainContent">
+            <div id="dashboard-section" class="management-section active">
+                <h1>Dashboard Overview</h1>
+                <div class="dashboard-cards">
+                    <div class="dashboard-card">
+                        <h3>Total Patients</h3>
+                        <h2 id="totalPatients">0</h2>
+                    </div>
+                    <div class="dashboard-card">
+                        <h3>Total Doctors</h3>
+                        <h2 id="totalDoctors">0</h2>
+                    </div>
+                    <div class="dashboard-card">
+                        <h3>Today's Appointments</h3>
+                        <h2 id="todaysAppointments">0</h2>
+                    </div>
+                    <div class="dashboard-card">
+                        <h3>Pending Bills</h3>
+                        <h2 id="pendingBills">0</h2>
+                    </div>
+                </div>
+
+                <div class="chart-container">
+                    <div class="card-title">
+                        <span>Appointments Trend</span>
+                        <div class="time-period-selector" id="appointmentsTimeSelector">
+                            <button class="time-period-btn active" onclick="changeDashboardTimePeriod('appointments', 'daily')">Daily</button>
+                            <button class="time-period-btn" onclick="changeDashboardTimePeriod('appointments', 'weekly')">Weekly</button>
+                            <button class="time-period-btn" onclick="changeDashboardTimePeriod('appointments', 'monthly')">Monthly</button>
+                        </div>
+                    </div>
+                    <canvas id="appointmentsChart"></canvas>
+                </div>
+
+                <div class="chart-container">
+                    <div class="card-title">
+                        <span>Revenue Trend</span>
+                        <div class="time-period-selector" id="revenueTimeSelector">
+                            <button class="time-period-btn active" onclick="changeDashboardTimePeriod('revenue', 'daily')">Daily</button>
+                            <button class="time-period-btn" onclick="changeDashboardTimePeriod('revenue', 'weekly')">Weekly</button>
+                            <button class="time-period-btn" onclick="changeDashboardTimePeriod('revenue', 'monthly')">Monthly</button>
+                        </div>
+                    </div>
+                    <canvas id="revenueChart"></canvas>
+                </div>
+            </div>
+
+            <div id="patient-management" class="management-section">
+                <div class="card">
+                    <h2 class="card-title">Patient Management</h2>
+                    <div class="submenu">
+                        <button class="submenu-btn" onclick="showPatientForm('add')">
+                            <i class="fas fa-plus"></i> Add New Patient
+                        </button>
+                        <button class="submenu-btn" onclick="showPatientForm('update')">
+                            <i class="fas fa-edit"></i> Update Patient
+                        </button>
+                        <button class="submenu-btn" onclick="showAllPatients()">
+                            <i class="fas fa-list"></i> View All Patients
+                        </button>
+                        <button class="submenu-btn" onclick="showPatientSearch()">
+                            <i class="fas fa-search"></i> Search Patient
+                        </button>
+                        <button class="submenu-btn btn-danger" onclick="showPatientDelete()">
+                            <i class="fas fa-trash"></i> Delete Patient
+                        </button>
+                    </div>
+                </div>
+
+                <div id="add-patient-form" class="card hidden-section">
+                    <h2 class="card-title">Add New Patient</h2>
+                    <form id="patientForm" onsubmit="event.preventDefault(); addPatient();">
+                        <div class="form-group">
+                            <label class="form-label" for="patientName">Full Name</label>
+                            <input type="text" class="form-control" id="patientName" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="patientAge">Age</label>
+                            <input type="number" class="form-control" id="patientAge" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="patientGender">Gender</label>
+                            <select class="form-control" id="patientGender" required>
+                                <option value="">Select Gender</option>
+                                <option value="Male">Male</option>
+                                <option value="Female">Female</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="patientPhone">Phone</label>
+                            <input type="tel" class="form-control" id="patientPhone">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="patientEmail">Email</label>
+                            <input type="email" class="form-control" id="patientEmail">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="patientAddress">Address</label>
+                            <textarea class="form-control" id="patientAddress" rows="3"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="patientBloodType">Blood Type</label>
+                            <select class="form-control" id="patientBloodType">
+                                <option value="">Select Blood Type</option>
+                                <option value="A+">A+</option>
+                                <option value="A-">A-</option>
+                                <option value="B+">B+</option>
+                                <option value="B-">B-</option>
+                                <option value="AB+">AB+</option>
+                                <option value="AB-">AB-</option>
+                                <option value="O+">O+</option>
+                                <option value="O-">O-</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="patientMedicalHistory">Medical History</label>
+                            <textarea class="form-control" id="patientMedicalHistory" rows="3"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="patientAllergies">Allergies</label>
+                            <textarea class="form-control" id="patientAllergies" rows="2"></textarea>
+                        </div>
+                        <div class="action-buttons">
+                            <button type="submit" class="btn btn-success">
+                                <i class="fas fa-save"></i> Save Patient
+                            </button>
+                            <button type="button" class="btn btn-danger" onclick="hidePatientForm('add')">
+                                <i class="fas fa-times"></i> Cancel
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <div id="update-patient-form" class="card hidden-section">
+                    <h2 class="card-title">Update Patient Information</h2>
+                    <div class="form-group">
+                        <label class="form-label" for="updatePatientId">Patient ID</label>
+                        <div class="search-container">
+                            <input type="text" class="form-control" id="updatePatientId" placeholder="Enter Patient ID">
+                            <button class="btn btn-primary" onclick="loadPatientForUpdate()">
+                                <i class="fas fa-search"></i> Load Patient
+                            </button>
+                        </div>
+                    </div>
+                    <form id="updatePatientForm" class="hidden-section" onsubmit="event.preventDefault(); updatePatient();">
+                        <div class="form-group">
+                            <label class="form-label" for="updatePatientName">Full Name</label>
+                            <input type="text" class="form-control" id="updatePatientName" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="updatePatientAge">Age</label>
+                            <input type="number" class="form-control" id="updatePatientAge" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="updatePatientGender">Gender</label>
+                            <select class="form-control" id="updatePatientGender" required>
+                                <option value="">Select Gender</option>
+                                <option value="Male">Male</option>
+                                <option value="Female">Female</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="updatePatientPhone">Phone</label>
+                            <input type="tel" class="form-control" id="updatePatientPhone">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="updatePatientEmail">Email</label>
+                            <input type="email" class="form-control" id="updatePatientEmail">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="updatePatientAddress">Address</label>
+                            <textarea class="form-control" id="updatePatientAddress" rows="3"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="updatePatientBloodType">Blood Type</label>
+                            <select class="form-control" id="updatePatientBloodType">
+                                <option value="">Select Blood Type</option>
+                                <option value="A+">A+</option>
+                                <option value="A-">A-</option>
+                                <option value="B+">B+</option>
+                                <option value="B-">B-</option>
+                                <option value="AB+">AB+</option>
+                                <option value="AB-">AB-</option>
+                                <option value="O+">O+</option>
+                                <option value="O-">O-</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="updatePatientMedicalHistory">Medical History</label>
+                            <textarea class="form-control" id="updatePatientMedicalHistory" rows="3"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="updatePatientAllergies">Allergies</label>
+                            <textarea class="form-control" id="updatePatientAllergies" rows="2"></textarea>
+                        </div>
+                        <div class="action-buttons">
+                            <button type="submit" class="btn btn-success">
+                                <i class="fas fa-save"></i> Update Patient
+                            </button>
+                            <button type="button" class="btn btn-danger" onclick="hidePatientForm('update')">
+                                <i class="fas fa-times"></i> Cancel
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <div id="patient-list" class="card hidden-section">
+                    <div class="card-title">
+                        <span>All Patients</span>
+                        <button class="btn btn-primary" onclick="exportPatients()">
+                            <i class="fas fa-file-export"></i> Export
+                        </button>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Name</th>
+                                    <th>Age</th>
+                                    <th>Gender</th>
+                                    <th>Phone</th>
+                                    <th>Blood Type</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="patientsTableBody">
+                            </tbody>
+                        </table>
+                        <div id="noPatientsMessage" class="no-data" style="display: none;">
+                            <i class="fas fa-database"></i>
+                            No patients found in the database. Please add a new patient.
+                        </div>
+                    </div>
+                    <div class="pagination" id="patientPagination">
+                    </div>
+                </div>
+
+                <div id="search-patient-form" class="card hidden-section">
+                    <h2 class="card-title">Search Patient</h2>
+                    <div class="search-container">
+                        <input type="text" class="search-input" id="searchPatientQuery" placeholder="Search by name, ID, or phone">
+                        <button class="btn btn-primary" onclick="searchPatient()">
+                            <i class="fas fa-search"></i> Search
+                        </button>
+                    </div>
+                    <div id="searchPatientResults" class="hidden-section">
+                        <div class="table-responsive">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Name</th>
+                                        <th>Age</th>
+                                        <th>Gender</th>
+                                        <th>Phone</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="searchPatientResultsBody">
+                                </tbody>
+                            </table>
+                            <div id="noPatientSearchResults" class="no-data" style="display: none;">
+                                <i class="fas fa-search"></i>
+                                No patients found matching your search criteria.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="delete-patient-form" class="card hidden-section">
+                    <h2 class="card-title">Delete Patient</h2>
+                    <div class="form-group">
+                        <label class="form-label" for="deletePatientId">Patient ID</label>
+                        <div class="search-container">
+                            <input type="text" class="form-control" id="deletePatientId" placeholder="Enter Patient ID">
+                            <button class="btn btn-danger" onclick="confirmDeletePatient()">
+                                <i class="fas fa-trash"></i> Delete
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="visualization-container hidden-section" id="patient-visualizations">
+                    <div class="visualization-card">
+                        <canvas id="patientGenderChart"></canvas>
+                    </div>
+                    <div class="visualization-card">
+                        <canvas id="patientAgeDistributionChart"></canvas>
+                    </div>
+                    <div class="visualization-card">
+                        <canvas id="patientBloodTypeChart"></canvas>
+                    </div>
+                    <div class="visualization-card">
+                        <canvas id="patientRegistrationTrendChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <div id="doctor-management" class="management-section">
+                <div class="card">
+                    <h2 class="card-title">Doctor Management</h2>
+                    <div class="submenu">
+                        <button class="submenu-btn" onclick="showDoctorForm('add')">
+                            <i class="fas fa-plus"></i> Add New Doctor
+                        </button>
+                        <button class="submenu-btn" onclick="showDoctorForm('update')">
+                            <i class="fas fa-edit"></i> Update Doctor
+                        </button>
+                        <button class="submenu-btn" onclick="showAllDoctors()">
+                            <i class="fas fa-list"></i> View All Doctors
+                        </button>
+                        <button class="submenu-btn" onclick="showDoctorSearch()">
+                            <i class="fas fa-search"></i> Search Doctor
+                        </button>
+                        <button class="submenu-btn btn-danger" onclick="showDoctorDelete()">
+                            <i class="fas fa-trash"></i> Delete Doctor
+                        </button>
+                    </div>
+                </div>
+
+                <div id="add-doctor-form" class="card hidden-section">
+                    <h2 class="card-title">Add New Doctor</h2>
+                    <form id="doctorForm" onsubmit="event.preventDefault(); addDoctor();">
+                        <div class="form-group">
+                            <label class="form-label" for="doctorName">Full Name</label>
+                            <input type="text" class="form-control" id="doctorName" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="doctorSpecialization">Specialization</label>
+                            <select class="form-control" id="doctorSpecialization" required>
+                                <option value="">Select Specialization</option>
+                                <option value="Cardiology">Cardiology</option>
+                                <option value="Neurology">Neurology</option>
+                                <option value="Orthopedics">Orthopedics</option>
+                                <option value="Pediatrics">Pediatrics</option>
+                                <option value="Dermatology">Dermatology</option>
+                                <option value="Oncology">Oncology</option>
+                                <option value="Gastroenterology">Gastroenterology</option>
+                                <option value="Psychiatry">Psychiatry</option>
+                                <option value="Radiology">Radiology</option>
+                                <option value="General Medicine">General Medicine</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="doctorDepartment">Department</label>
+                            <select class="form-control" id="doctorDepartment">
+                                <option value="">Select Department</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="doctorQualification">Qualification</label>
+                            <input type="text" class="form-control" id="doctorQualification" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="doctorExperience">Years of Experience</label>
+                            <input type="number" class="form-control" id="doctorExperience" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="doctorFee">Consultation Fee</label>
+                            <input type="number" step="0.01" class="form-control" id="doctorFee" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="doctorPhone">Phone</label>
+                            <input type="tel" class="form-control" id="doctorPhone" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="doctorEmail">Email</label>
+                            <input type="email" class="form-control" id="doctorEmail" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="doctorAvailability">Availability</label>
+                            <textarea class="form-control" id="doctorAvailability" rows="3" required></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="doctorBio">Bio</label>
+                            <textarea class="form-control" id="doctorBio" rows="3"></textarea>
+                        </div>
+                        <div class="action-buttons">
+                            <button type="submit" class="btn btn-success">
+                                <i class="fas fa-save"></i> Save Doctor
+                            </button>
+                            <button type="button" class="btn btn-danger" onclick="hideDoctorForm('add')">
+                                <i class="fas fa-times"></i> Cancel
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <div id="update-doctor-form" class="card hidden-section">
+                    <h2 class="card-title">Update Doctor Information</h2>
+                    <div class="form-group">
+                        <label class="form-label" for="updateDoctorId">Doctor ID</label>
+                        <div class="search-container">
+                            <input type="text" class="form-control" id="updateDoctorId" placeholder="Enter Doctor ID">
+                            <button class="btn btn-primary" onclick="loadDoctorForUpdate()">
+                                <i class="fas fa-search"></i> Load Doctor
+                            </button>
+                        </div>
+                    </div>
+                    <form id="updateDoctorForm" class="hidden-section" onsubmit="event.preventDefault(); updateDoctor();">
+                        <div class="form-group">
+                            <label class="form-label" for="updateDoctorName">Full Name</label>
+                            <input type="text" class="form-control" id="updateDoctorName" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="updateDoctorSpecialization">Specialization</label>
+                            <select class="form-control" id="updateDoctorSpecialization" required>
+                                <option value="">Select Specialization</option>
+                                <option value="Cardiology">Cardiology</option>
+                                <option value="Neurology">Neurology</option>
+                                <option value="Orthopedics">Orthopedics</option>
+                                <option value="Pediatrics">Pediatrics</option>
+                                <option value="Dermatology">Dermatology</option>
+                                <option value="Oncology">Oncology</option>
+                                <option value="Gastroenterology">Gastroenterology</option>
+                                <option value="Psychiatry">Psychiatry</option>
+                                <option value="Radiology">Radiology</option>
+                                <option value="General Medicine">General Medicine</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="updateDoctorDepartment">Department</label>
+                            <select class="form-control" id="updateDoctorDepartment">
+                                <option value="">Select Department</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="updateDoctorQualification">Qualification</label>
+                            <input type="text" class="form-control" id="updateDoctorQualification" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="updateDoctorExperience">Years of Experience</label>
+                            <input type="number" class="form-control" id="updateDoctorExperience" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="updateDoctorFee">Consultation Fee</label>
+                            <input type="number" class="form-control" id="updateDoctorFee" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="updateDoctorPhone">Phone</label>
+                            <input type="tel" class="form-control" id="updateDoctorPhone" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="updateDoctorEmail">Email</label>
+                            <input type="email" class="form-control" id="updateDoctorEmail" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="updateDoctorAvailability">Availability</label>
+                            <textarea class="form-control" id="updateDoctorAvailability" rows="3" required></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="updateDoctorBio">Bio</label>
+                            <textarea class="form-control" id="updateDoctorBio" rows="3"></textarea>
+                        </div>
+                        <div class="action-buttons">
+                            <button type="submit" class="btn btn-success">
+                                <i class="fas fa-save"></i> Update Doctor
+                            </button>
+                            <button type="button" class="btn btn-danger" onclick="hideDoctorForm('update')">
+                                <i class="fas fa-times"></i> Cancel
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <div id="doctor-list" class="card hidden-section">
+                    <div class="card-title">
+                        <span>All Doctors</span>
+                        <button class="btn btn-primary" onclick="exportDoctors()">
+                            <i class="fas fa-file-export"></i> Export
+                        </button>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Name</th>
+                                    <th>Specialization</th>
+                                    <th>Department</th>
+                                    <th>Fee</th>
+                                    <th>Availability</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="doctorsTableBody">
+                            </tbody>
+                        </table>
+                        <div id="noDoctorsMessage" class="no-data" style="display: none;">
+                            <i class="fas fa-database"></i>
+                            No doctors found in the database. Please add a new doctor.
+                        </div>
+                    </div>
+                    <div class="pagination" id="doctorPagination">
+                    </div>
+                </div>
+
+                <div id="search-doctor-form" class="card hidden-section">
+                    <h2 class="card-title">Search Doctor</h2>
+                    <div class="search-container">
+                        <input type="text" class="search-input" id="searchDoctorQuery" placeholder="Search by name, specialization, or department">
+                        <button class="btn btn-primary" onclick="searchDoctor()">
+                            <i class="fas fa-search"></i> Search
+                        </button>
+                    </div>
+                    <div id="searchDoctorResults" class="hidden-section">
+                        <div class="table-responsive">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Name</th>
+                                        <th>Specialization</th>
+                                        <th>Department</th>
+                                        <th>Fee</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="searchDoctorResultsBody">
+                                </tbody>
+                            </table>
+                            <div id="noDoctorSearchResults" class="no-data" style="display: none;">
+                                <i class="fas fa-search"></i>
+                                No doctors found matching your search criteria.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="delete-doctor-form" class="card hidden-section">
+                    <h2 class="card-title">Delete Doctor</h2>
+                    <div class="form-group">
+                        <label class="form-label" for="deleteDoctorId">Doctor ID</label>
+                        <div class="search-container">
+                            <input type="text" class="form-control" id="deleteDoctorId" placeholder="Enter Doctor ID">
+                            <button class="btn btn-danger" onclick="confirmDeleteDoctor()">
+                                <i class="fas fa-trash"></i> Delete
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="visualization-container hidden-section" id="doctor-visualizations">
+                    <div class="visualization-card">
+                        <canvas id="doctorSpecializationChart"></canvas>
+                    </div>
+                    <div class="visualization-card">
+                        <canvas id="doctorDepartmentChart"></canvas>
+                    </div>
+                    <div class="visualization-card">
+                        <canvas id="doctorFeeDistributionChart"></canvas>
+                    </div>
+                    <div class="visualization-card">
+                        <canvas id="doctorExperienceChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <div id="appointment-management" class="management-section">
+                <div class="card">
+                    <h2 class="card-title">Appointment Management</h2>
+                    <div class="submenu">
+                        <button class="submenu-btn" onclick="showAppointmentForm('add')">
+                            <i class="fas fa-plus"></i> Schedule New
+                        </button>
+                        <button class="submenu-btn" onclick="showAppointmentForm('update')">
+                            <i class="fas fa-edit"></i> Update
+                        </button>
+                        <button class="submenu-btn" onclick="showAllAppointments()">
+                            <i class="fas fa-list"></i> View All
+                        </button>
+                        <button class="submenu-btn" onclick="showAppointmentSearch()">
+                            <i class="fas fa-search"></i> Search
+                        </button>
+                        <button class="submenu-btn btn-danger" onclick="showAppointmentCancel()">
+                            <i class="fas fa-times"></i> Cancel
+                        </button>
+                    </div>
+                </div>
+
+                <div id="add-appointment-form" class="card hidden-section">
+                    <h2 class="card-title">Schedule New Appointment</h2>
+                    <form id="appointmentForm" onsubmit="event.preventDefault(); addAppointment();">
+                        <div class="form-group">
+                            <label class="form-label" for="appointmentPatient">Patient</label>
+                            <select class="form-control" id="appointmentPatient" required>
+                                <option value="">Select Patient</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="appointmentDoctor">Doctor</label>
+                            <select class="form-control" id="appointmentDoctor" required>
+                                <option value="">Select Doctor</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="appointmentDate">Date</label>
+                            <input type="date" class="form-control" id="appointmentDate" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="appointmentTime">Time</label>
+                            <input type="time" class="form-control" id="appointmentTime" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="appointmentReason">Reason</label>
+                            <textarea class="form-control" id="appointmentReason" rows="3"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="appointmentStatus">Status</label>
+                            <select class="form-control" id="appointmentStatus" required>
+                                <option value="Scheduled">Scheduled</option>
+                                <option value="Completed">Completed</option>
+                                <option value="Cancelled">Cancelled</option>
+                                <option value="No-Show">No-Show</option>
+                            </select>
+                        </div>
+                        <div class="action-buttons">
+                            <button type="submit" class="btn btn-success">
+                                <i class="fas fa-save"></i> Schedule Appointment
+                            </button>
+                            <button type="button" class="btn btn-danger" onclick="hideAppointmentForm('add')">
+                                <i class="fas fa-times"></i> Cancel
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <div id="update-appointment-form" class="card hidden-section">
+                    <h2 class="card-title">Update Appointment</h2>
+                    <div class="form-group">
+                        <label class="form-label" for="updateAppointmentId">Appointment ID</label>
+                        <div class="search-container">
+                            <input type="text" class="form-control" id="updateAppointmentId" placeholder="Enter Appointment ID">
+                            <button class="btn btn-primary" onclick="loadAppointmentForUpdate()">
+                                <i class="fas fa-search"></i> Load Appointment
+                            </button>
+                        </div>
+                    </div>
+                    <form id="updateAppointmentForm" class="hidden-section" onsubmit="event.preventDefault(); updateAppointment();">
+                        <div class="form-group">
+                            <label class="form-label" for="updateAppointmentPatient">Patient</label>
+                            <select class="form-control" id="updateAppointmentPatient" required>
+                                <option value="">Select Patient</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="updateAppointmentDoctor">Doctor</label>
+                            <select class="form-control" id="updateAppointmentDoctor" required>
+                                <option value="">Select Doctor</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="updateAppointmentDate">Date</label>
+                            <input type="date" class="form-control" id="updateAppointmentDate" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="updateAppointmentTime">Time</label>
+                            <input type="time" class="form-control" id="updateAppointmentTime" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="updateAppointmentStatus">Status</label>
+                            <select class="form-control" id="updateAppointmentStatus" required>
+                                <option value="Scheduled">Scheduled</option>
+                                <option value="Completed">Completed</option>
+                                <option value="Cancelled">Cancelled</option>
+                                <option value="No-Show">No-Show</option>
+                            </select>
+                        </div>
+                        <div class="action-buttons">
+                            <button type="submit" class="btn btn-success">
+                                <i class="fas fa-save"></i> Update Appointment
+                            </button>
+                            <button type="button" class="btn btn-danger" onclick="hideAppointmentForm('update')">
+                                <i class="fas fa-times"></i> Cancel
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <div id="appointment-list" class="card hidden-section">
+                    <div class="card-title">
+                        <span>All Appointments</span>
+                        <div>
+                            <button class="btn btn-primary" onclick="exportAppointments()">
+                                <i class="fas fa-file-export"></i> Export
+                            </button>
+                            <button class="btn btn-success" onclick="showAppointmentForm('add')">
+                                <i class="fas fa-plus"></i> New Appointment
+                            </button>
+                        </div>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Patient</th>
+                                    <th>Doctor</th>
+                                    <th>Date</th>
+                                    <th>Time</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="appointmentsTableBody">
+                            </tbody>
+                        </table>
+                        <div id="noAppointmentsMessage" class="no-data" style="display: none;">
+                            <i class="fas fa-database"></i>
+                            No appointments found in the database. Please schedule a new appointment.
+                        </div>
+                    </div>
+                    <div class="pagination" id="appointmentPagination">
+                    </div>
+                </div>
+
+                <div id="search-appointment-form" class="card hidden-section">
+                    <h2 class="card-title">Search Appointment</h2>
+                    <div class="search-container">
+                        <input type="text" class="search-input" id="searchAppointmentQuery" placeholder="Search by patient, doctor, or date">
+                        <button class="btn btn-primary" onclick="searchAppointment()">
+                            <i class="fas fa-search"></i> Search
+                        </button>
+                    </div>
+                    <div id="searchAppointmentResults" class="hidden-section">
+                        <div class="table-responsive">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Patient</th>
+                                        <th>Doctor</th>
+                                        <th>Date</th>
+                                        <th>Time</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="searchAppointmentResultsBody">
+                                </tbody>
+                            </table>
+                            <div id="noAppointmentSearchResults" class="no-data" style="display: none;">
+                                <i class="fas fa-search"></i>
+                                No appointments found matching your search criteria.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="cancel-appointment-form" class="card hidden-section">
+                    <h2 class="card-title">Cancel Appointment</h2>
+                    <div class="form-group">
+                        <label class="form-label" for="cancelAppointmentId">Appointment ID</label>
+                        <div class="search-container">
+                            <input type="text" class="form-control" id="cancelAppointmentId" placeholder="Enter Appointment ID">
+                            <button class="btn btn-danger" onclick="confirmCancelAppointment()">
+                                <i class="fas fa-times"></i> Cancel
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="visualization-container hidden-section" id="appointment-visualizations">
+                    <div class="visualization-card">
+                        <canvas id="appointmentStatusChart"></canvas>
+                    </div>
+                    <div class="visualization-card">
+                        <canvas id="appointmentTrendChart"></canvas>
+                    </div>
+                    <div class="visualization-card">
+                        <canvas id="doctorAppointmentChart"></canvas>
+                    </div>
+                    <div class="visualization-card">
+                        <canvas id="appointmentReasonChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <div id="billing-management" class="management-section">
+                <div class="card">
+                    <h2 class="card-title">Billing Management</h2>
+                    <div class="submenu">
+                        <button class="submenu-btn" onclick="showBillingForm('add')">
+                            <i class="fas fa-plus"></i> Generate New Bill
+                        </button>
+                        <button class="submenu-btn" onclick="showBillingForm('update')">
+                            <i class="fas fa-edit"></i> Update Bill
+                        </button>
+                        <button class="submenu-btn" onclick="showAllBills()">
+                            <i class="fas fa-list"></i> View All Bills
+                        </button>
+                        <button class="submenu-btn" onclick="showBillingSearch()">
+                            <i class="fas fa-search"></i> Search Bills
+                        </button>
+                    </div>
+                </div>
+
+                <div id="add-bill-form" class="card hidden-section">
+                    <h2 class="card-title">Generate New Bill</h2>
+                    <form id="billForm" onsubmit="event.preventDefault(); addBill();">
+                        <div class="form-group">
+                            <label class="form-label" for="billPatient">Patient</label>
+                            <select class="form-control" id="billPatient" required>
+                                <option value="">Select Patient</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="billAppointment">Appointment</label>
+                            <select class="form-control" id="billAppointment">
+                                <option value="">Select Appointment (Optional)</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="billDate">Date</label>
+                            <input type="date" class="form-control" id="billDate" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="billAmount">Amount</label>
+                            <input type="number" step="0.01" class="form-control" id="billAmount" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="billTax">Tax (%)</label>
+                            <input type="number" step="0.01" class="form-control" id="billTax" value="0.00">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="billDiscount">Discount (%)</label>
+                            <input type="number" step="0.01" class="form-control" id="billDiscount" value="0.00">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="billDueDate">Due Date</label>
+                            <input type="date" class="form-control" id="billDueDate">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="billPaymentMethod">Payment Method</label>
+                            <select class="form-control" id="billPaymentMethod" required>
+                                <option value="Cash">Cash</option>
+                                <option value="Credit Card">Credit Card</option>
+                                <option value="Insurance">Insurance</option>
+                                <option value="Bank Transfer">Bank Transfer</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="billStatus">Status</label>
+                            <select class="form-control" id="billStatus" required>
+                                <option value="Unpaid">Unpaid</option>
+                                <option value="Paid">Paid</option>
+                                <option value="Partial">Partial</option>
+                                <option value="Overdue">Overdue</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="billItems">Items (JSON Array)</label>
+                            <textarea class="form-control" id="billItems" rows="3" placeholder='e.g., [{"item": "Consultation", "price": 100}]'></textarea>
+                        </div>
+                        <div class="action-buttons">
+                            <button type="submit" class="btn btn-success">
+                                <i class="fas fa-save"></i> Generate Bill
+                            </button>
+                            <button type="button" class="btn btn-danger" onclick="hideBillingForm('add')">
+                                <i class="fas fa-times"></i> Cancel
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <div id="update-bill-form" class="card hidden-section">
+                    <h2 class="card-title">Update Bill</h2>
+                    <div class="form-group">
+                        <label class="form-label" for="updateBillId">Bill ID</label>
+                        <div class="search-container">
+                            <input type="text" class="form-control" id="updateBillId" placeholder="Enter Bill ID">
+                            <button class="btn btn-primary" onclick="loadBillForUpdate()">
+                                <i class="fas fa-search"></i> Load Bill
+                            </button>
+                        </div>
+                    </div>
+                    <form id="updateBillForm" class="hidden-section" onsubmit="event.preventDefault(); updateBill();">
+                        <div class="form-group">
+                            <label class="form-label" for="updateBillStatus">Status</label>
+                            <select class="form-control" id="updateBillStatus" required>
+                                <option value="Unpaid">Unpaid</option>
+                                <option value="Paid">Paid</option>
+                                <option value="Partial">Partial</option>
+                                <option value="Overdue">Overdue</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="updateBillPaymentMethod">Payment Method</label>
+                            <select class="form-control" id="updateBillPaymentMethod" required>
+                                <option value="Cash">Cash</option>
+                                <option value="Credit Card">Credit Card</option>
+                                <option value="Insurance">Insurance</option>
+                                <option value="Bank Transfer">Bank Transfer</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+                         <div class="form-group">
+                            <label class="form-label" for="updateBillAmount">Amount</label>
+                            <input type="number" step="0.01" class="form-control" id="updateBillAmount" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="updateBillTax">Tax (%)</label>
+                            <input type="number" step="0.01" class="form-control" id="updateBillTax">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="updateBillDiscount">Discount (%)</label>
+                            <input type="number" step="0.01" class="form-control" id="updateBillDiscount">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="updateBillItems">Items (JSON Array)</label>
+                            <textarea class="form-control" id="updateBillItems" rows="3" placeholder='e.g., [{"item": "Consultation", "price": 100}]'></textarea>
+                        </div>
+                        <div class="action-buttons">
+                            <button type="submit" class="btn btn-success">
+                                <i class="fas fa-save"></i> Update Bill
+                            </button>
+                            <button type="button" class="btn btn-danger" onclick="hideBillingForm('update')">
+                                <i class="fas fa-times"></i> Cancel
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <div id="bill-list" class="card hidden-section">
+                    <div class="card-title">
+                        <span>All Bills</span>
+                        <div>
+                            <button class="btn btn-primary" onclick="exportBills()">
+                                <i class="fas fa-file-export"></i> Export
+                            </button>
+                            <button class="btn btn-success" onclick="showBillingForm('add')">
+                                <i class="fas fa-plus"></i> New Bill
+                            </button>
+                        </div>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Invoice #</th>
+                                    <th>Patient</th>
+                                    <th>Doctor</th>
+                                    <th>Date</th>
+                                    <th>Amount</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="billsTableBody">
+                            </tbody>
+                        </table>
+                        <div id="noBillsMessage" class="no-data" style="display: none;">
+                            <i class="fas fa-database"></i>
+                            No bills found in the database. Please generate a new bill.
+                        </div>
+                    </div>
+                    <div class="pagination" id="billPagination">
+                    </div>
+                </div>
+
+                <div id="search-bill-form" class="card hidden-section">
+                    <h2 class="card-title">Search Bill</h2>
+                    <div class="search-container">
+                        <input type="text" class="search-input" id="searchBillQuery" placeholder="Search by patient, invoice #, or status">
+                        <button class="btn btn-primary" onclick="searchBill()">
+                            <i class="fas fa-search"></i> Search
+                        </button>
+                    </div>
+                    <div id="searchBillResults" class="hidden-section">
+                        <div class="table-responsive">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Invoice #</th>
+                                        <th>Patient</th>
+                                        <th>Date</th>
+                                        <th>Amount</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="searchBillResultsBody">
+                                </tbody>
+                            </table>
+                            <div id="noBillSearchResults" class="no-data" style="display: none;">
+                                <i class="fas fa-search"></i>
+                                No bills found matching your search criteria.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="visualization-container hidden-section" id="billing-visualizations">
+                    <div class="visualization-card">
+                        <canvas id="billingStatusChart"></canvas>
+                    </div>
+                    <div class="visualization-card">
+                        <canvas id="revenueTrendChart"></canvas>
+                    </div>
+                    <div class="visualization-card">
+                        <canvas id="paymentMethodChart"></canvas>
+                    </div>
+                    <div class="visualization-card">
+                        <canvas id="outstandingBillsChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <div id="medical-records" class="management-section">
+                <div class="card">
+                    <h2 class="card-title">Medical Records</h2>
+                    <div class="submenu">
+                        <button class="submenu-btn" onclick="showMedicalRecordForm('add')">
+                            <i class="fas fa-plus"></i> Add New Record
+                        </button>
+                        <button class="submenu-btn" onclick="showMedicalRecordForm('update')">
+                            <i class="fas fa-edit"></i> Update Record
+                        </button>
+                        <button class="submenu-btn" onclick="showAllMedicalRecords()">
+                            <i class="fas fa-list"></i> View All Records
+                        </button>
+                        <button class="submenu-btn" onclick="showMedicalRecordSearch()">
+                            <i class="fas fa-search"></i> Search Records
+                        </button>
+                        <button class="submenu-btn" onclick="exportMedicalRecords()">
+                            <i class="fas fa-file-export"></i> Export Records
+                        </button>
+                    </div>
+                </div>
+
+                <div id="add-medical-record-form" class="card hidden-section">
+                    <h2 class="card-title">Add New Medical Record</h2>
+                    <form id="medicalRecordForm" onsubmit="event.preventDefault(); addMedicalRecord();">
+                        <div class="form-group">
+                            <label class="form-label" for="medicalRecordPatient">Patient</label>
+                            <select class="form-control" id="medicalRecordPatient" required>
+                                <option value="">Select Patient</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="medicalRecordDoctor">Doctor</label>
+                            <select class="form-control" id="medicalRecordDoctor">
+                                <option value="">Select Doctor (Optional)</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="medicalRecordDate">Date</label>
+                            <input type="date" class="form-control" id="medicalRecordDate" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="medicalRecordVisitType">Visit Type</label>
+                            <select class="form-control" id="medicalRecordVisitType">
+                                <option value="">Select Visit Type (Optional)</option>
+                                <option value="Routine Checkup">Routine Checkup</option>
+                                <option value="Emergency">Emergency</option>
+                                <option value="Follow-up">Follow-up</option>
+                                <option value="Specialist Consultation">Specialist Consultation</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="medicalRecordDiagnosis">Diagnosis</label>
+                            <textarea class="form-control" id="medicalRecordDiagnosis" rows="3" required></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="medicalRecordSymptoms">Symptoms</label>
+                            <textarea class="form-control" id="medicalRecordSymptoms" rows="3"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="medicalRecordTreatment">Treatment</label>
+                            <textarea class="form-control" id="medicalRecordTreatment" rows="3"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="medicalRecordPrescription">Prescription</label>
+                            <textarea class="form-control" id="medicalRecordPrescription" rows="3"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="medicalRecordTestsOrdered">Tests Ordered</label>
+                            <textarea class="form-control" id="medicalRecordTestsOrdered" rows="3"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="medicalRecordTestResults">Test Results</label>
+                            <textarea class="form-control" id="medicalRecordTestResults" rows="3"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="medicalRecordNotes">Notes</label>
+                            <textarea class="form-control" id="medicalRecordNotes" rows="3"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="medicalRecordFollowUpRequired">Follow-up Required?</label>
+                            <input type="checkbox" id="medicalRecordFollowUpRequired">
+                        </div>
+                        <div class="form-group" id="medicalRecordFollowUpDateGroup" style="display:none;">
+                            <label class="form-label" for="medicalRecordFollowUpDate">Follow-up Date</label>
+                            <input type="date" class="form-control" id="medicalRecordFollowUpDate">
+                        </div>
+                        <div class="action-buttons">
+                            <button type="submit" class="btn btn-success">
+                                <i class="fas fa-save"></i> Save Record
+                            </button>
+                            <button type="button" class="btn btn-danger" onclick="hideMedicalRecordForm('add')">
+                                <i class="fas fa-times"></i> Cancel
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <div id="update-medical-record-form" class="card hidden-section">
+                    <h2 class="card-title">Update Medical Record</h2>
+                    <div class="form-group">
+                        <label class="form-label" for="updateMedicalRecordId">Record ID</label>
+                        <div class="search-container">
+                            <input type="text" class="form-control" id="updateMedicalRecordId" placeholder="Enter Record ID">
+                            <button class="btn btn-primary" onclick="loadMedicalRecordForUpdate()">
+                                <i class="fas fa-search"></i> Load Record
+                            </button>
+                        </div>
+                    </div>
+                    <form id="updateMedicalRecordForm" class="hidden-section" onsubmit="event.preventDefault(); updateMedicalRecord();">
+                        <div class="form-group">
+                            <label class="form-label" for="updateMedicalRecordPatientName">Patient Name</label>
+                            <input type="text" class="form-control" id="updateMedicalRecordPatientName" disabled>
+                        </div>
+                         <div class="form-group">
+                            <label class="form-label" for="updateMedicalRecordDoctorName">Doctor Name</label>
+                            <input type="text" class="form-control" id="updateMedicalRecordDoctorName" disabled>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="updateMedicalRecordDate">Date</label>
+                            <input type="date" class="form-control" id="updateMedicalRecordDate" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="updateMedicalRecordVisitType">Visit Type</label>
+                            <select class="form-control" id="updateMedicalRecordVisitType">
+                                <option value="">Select Visit Type (Optional)</option>
+                                <option value="Routine Checkup">Routine Checkup</option>
+                                <option value="Emergency">Emergency</option>
+                                <option value="Follow-up">Follow-up</option>
+                                <option value="Specialist Consultation">Specialist Consultation</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="updateMedicalRecordDiagnosis">Diagnosis</label>
+                            <textarea class="form-control" id="updateMedicalRecordDiagnosis" rows="3" required></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="updateMedicalRecordSymptoms">Symptoms</label>
+                            <textarea class="form-control" id="updateMedicalRecordSymptoms" rows="3"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="updateMedicalRecordTreatment">Treatment</label>
+                            <textarea class="form-control" id="updateMedicalRecordTreatment" rows="3"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="updateMedicalRecordPrescription">Prescription</label>
+                            <textarea class="form-control" id="updateMedicalRecordPrescription" rows="3"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="updateMedicalRecordTestsOrdered">Tests Ordered</label>
+                            <textarea class="form-control" id="updateMedicalRecordTestsOrdered" rows="3"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="updateMedicalRecordTestResults">Test Results</label>
+                            <textarea class="form-control" id="updateMedicalRecordTestResults" rows="3"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="updateMedicalRecordNotes">Notes</label>
+                            <textarea class="form-control" id="updateMedicalRecordNotes" rows="3"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="updateMedicalRecordFollowUpRequired">Follow-up Required?</label>
+                            <input type="checkbox" id="updateMedicalRecordFollowUpRequired">
+                        </div>
+                        <div class="form-group" id="updateMedicalRecordFollowUpDateGroup" style="display:none;">
+                            <label class="form-label" for="updateMedicalRecordFollowUpDate">Follow-up Date</label>
+                            <input type="date" class="form-control" id="updateMedicalRecordFollowUpDate">
+                        </div>
+                        <div class="action-buttons">
+                            <button type="submit" class="btn btn-success">
+                                <i class="fas fa-save"></i> Update Record
+                            </button>
+                            <button type="button" class="btn btn-danger" onclick="hideMedicalRecordForm('update')">
+                                <i class="fas fa-times"></i> Cancel
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <div id="medical-records-list" class="card hidden-section">
+                    <div class="card-title">
+                        <span>All Medical Records</span>
+                        <button class="btn btn-success" onclick="showMedicalRecordForm('add')">
+                            <i class="fas fa-plus"></i> New Record
+                        </button>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Record ID</th>
+                                    <th>Patient</th>
+                                    <th>Doctor</th>
+                                    <th>Diagnosis</th>
+                                    <th>Date</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="medicalRecordsTableBody">
+                            </tbody>
+                        </table>
+                        <div id="noMedicalRecordsMessage" class="no-data" style="display: none;">
+                            <i class="fas fa-database"></i>
+                            No medical records found in the database. Please add a new record.
+                        </div>
+                    </div>
+                    <div class="pagination" id="medicalRecordPagination">
+                    </div>
+                </div>
+
+                <div id="search-medical-record-form" class="card hidden-section">
+                    <h2 class="card-title">Search Medical Record</h2>
+                    <div class="search-container">
+                        <input type="text" class="search-input" id="searchMedicalRecordQuery" placeholder="Search by patient, doctor, or diagnosis">
+                        <button class="btn btn-primary" onclick="searchMedicalRecord()">
+                            <i class="fas fa-search"></i> Search
+                        </button>
+                    </div>
+                    <div id="searchMedicalRecordResults" class="hidden-section">
+                        <div class="table-responsive">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Record ID</th>
+                                        <th>Patient</th>
+                                        <th>Doctor</th>
+                                        <th>Diagnosis</th>
+                                        <th>Date</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="searchMedicalRecordResultsBody">
+                                </tbody>
+                            </table>
+                            <div id="noMedicalRecordSearchResults" class="no-data" style="display: none;">
+                                <i class="fas fa-search"></i>
+                                No medical records found matching your search criteria.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="visualization-container hidden-section" id="medical-records-visualizations">
+                    <div class="visualization-card">
+                        <canvas id="diagnosisChart"></canvas>
+                    </div>
+                    <div class="visualization-card">
+                        <canvas id="treatmentChart"></canvas>
+                    </div>
+                    <div class="visualization-card">
+                        <canvas id="prescriptionTrendChart"></canvas>
+                    </div>
+                    <div class="visualization-card">
+                        <canvas id="patientConditionChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <div id="reports-analytics" class="management-section">
+                <div class="card">
+                    <h2 class="card-title">Reports & Analytics</h2>
+                    <div class="submenu">
+                        <button class="submenu-btn" onclick="showFinancialReports()">
+                            <i class="fas fa-money-bill-wave"></i> Financial Reports
+                        </button>
+                        <button class="submenu-btn" onclick="showOperationalReports()">
+                            <i class="fas fa-cogs"></i> Operational Reports
+                        </button>
+                        <button class="submenu-btn" onclick="showDoctorPerformance()">
+                            <i class="fas fa-user-md"></i> Doctor Performance
+                        </button>
+                        <button class="submenu-btn" onclick="showPatientStatistics()">
+                            <i class="fas fa-procedures"></i> Patient Statistics
+                        </button>
+                    </div>
+                </div>
+
+                <div id="financial-reports" class="card hidden-section">
+                    <h2 class="card-title">Financial Reports</h2>
+                    <div class="visualization-container">
+                        <div class="visualization-card">
+                            <canvas id="monthlyRevenueChart"></canvas>
+                        </div>
+                        <div class="visualization-card">
+                            <canvas id="expenseBreakdownChart"></canvas>
+                        </div>
+                        <div class="visualization-card">
+                            <canvas id="profitTrendChart"></canvas>
+                        </div>
+                        <div class="visualization-card">
+                            <canvas id="departmentRevenueChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="action-buttons">
+                        <button class="btn btn-primary" onclick="exportFinancialReport()">
+                            <i class="fas fa-file-pdf"></i> Export PDF
+                        </button>
+                        <button class="btn btn-success" onclick="exportFinancialData()">
+                            <i class="fas fa-file-excel"></i> Export Excel
+                        </button>
+                    </div>
+                </div>
+
+                <div id="operational-reports" class="card hidden-section">
+                    <h2 class="card-title">Operational Reports</h2>
+                    <div class="visualization-container">
+                        <div class="visualization-card">
+                            <canvas id="patientFlowChart"></canvas>
+                        </div>
+                        <div class="visualization-card">
+                            <canvas id="resourceUtilizationChart"></canvas>
+                        </div>
+                        <div class="visualization-card">
+                            <canvas id="staffPerformanceChart"></canvas>
+                        </div>
+                        <div class="visualization-card">
+                            <canvas id="operationalEfficiencyChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="doctor-performance-reports" class="card hidden-section">
+                    <h2 class="card-title">Doctor Performance</h2>
+                    <div class="visualization-container">
+                        <div class="visualization-card">
+                            <canvas id="doctorAppointmentVolumeChart"></canvas>
+                        </div>
+                        <div class="visualization-card">
+                            <canvas id="doctorRevenueChart"></canvas>
+                        </div>
+                        <div class="visualization-card">
+                            <canvas id="doctorPatientSatisfactionChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="patient-statistics-reports" class="card hidden-section">
+                    <h2 class="card-title">Patient Statistics</h2>
+                    <div class="visualization-container">
+                        <div class="visualization-card">
+                            <canvas id="patientAgeDistributionReportChart"></canvas>
+                        </div>
+                        <div class="visualization-card">
+                            <canvas id="patientGenderDistributionChart"></canvas>
+                        </div>
+                        <div class="visualization-card">
+                            <canvas id="patientVisitsChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="department-management" class="management-section">
+                <div class="card">
+                    <h2 class="card-title">Department Management</h2>
+                    <div class="submenu">
+                        <button class="submenu-btn" onclick="showDepartmentForm('add')"><i class="fas fa-plus"></i> Add New Department</button>
+                        <button class="submenu-btn" onclick="showDepartmentForm('update')"><i class="fas fa-edit"></i> Update Department</button>
+                        <button class="submenu-btn" onclick="showAllDepartments()"><i class="fas fa-list"></i> View All Departments</button>
+                        <button class="submenu-btn btn-danger" onclick="showDepartmentDelete()"><i class="fas fa-trash"></i> Delete Department</button>
+                    </div>
+                </div>
+
+                <div id="add-department-form" class="card hidden-section">
+                    <h2 class="card-title">Add New Department</h2>
+                    <form id="departmentForm" onsubmit="event.preventDefault(); addDepartment();">
+                        <div class="form-group">
+                            <label class="form-label" for="departmentName">Name</label>
+                            <input type="text" class="form-control" id="departmentName" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="departmentHead">Head of Department</label>
+                            <input type="text" class="form-control" id="departmentHead">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="departmentPhone">Phone</label>
+                            <input type="tel" class="form-control" id="departmentPhone">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="departmentEmail">Email</label>
+                            <input type="email" class="form-control" id="departmentEmail">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="departmentDescription">Description</label>
+                            <textarea class="form-control" id="departmentDescription" rows="3"></textarea>
+                        </div>
+                        <div class="action-buttons">
+                            <button type="submit" class="btn btn-success">
+                                <i class="fas fa-save"></i> Save Department
+                            </button>
+                            <button type="button" class="btn btn-danger" onclick="hideDepartmentForm('add')">
+                                <i class="fas fa-times"></i> Cancel
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <div id="update-department-form" class="card hidden-section">
+                    <h2 class="card-title">Update Department</h2>
+                    <div class="form-group">
+                        <label class="form-label" for="updateDepartmentId">Department ID</label>
+                        <div class="search-container">
+                            <input type="text" class="form-control" id="updateDepartmentId" placeholder="Enter Department ID">
+                            <button class="btn btn-primary" onclick="loadDepartmentForUpdate()">
+                                <i class="fas fa-search"></i> Load Department
+                            </button>
+                        </div>
+                    </div>
+                    <form id="updateDepartmentForm" class="hidden-section" onsubmit="event.preventDefault(); updateDepartment();">
+                         <div class="form-group">
+                            <label class="form-label" for="updateDepartmentName">Name</label>
+                            <input type="text" class="form-control" id="updateDepartmentName" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="updateDepartmentHead">Head of Department</label>
+                            <input type="text" class="form-control" id="updateDepartmentHead">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="updateDepartmentPhone">Phone</label>
+                            <input type="tel" class="form-control" id="updateDepartmentPhone">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="updateDepartmentEmail">Email</label>
+                            <input type="email" class="form-control" id="updateDepartmentEmail">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="updateDepartmentDescription">Description</label>
+                            <textarea class="form-control" id="updateDepartmentDescription" rows="3"></textarea>
+                        </div>
+                        <div class="action-buttons">
+                            <button type="submit" class="btn btn-success">
+                                <i class="fas fa-save"></i> Update
+                            </button>
+                            <button type="button" class="btn btn-danger" onclick="hideDepartmentForm('update')">
+                                <i class="fas fa-times"></i> Cancel
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <div id="department-list" class="card hidden-section">
+                    <div class="card-title">
+                        <span>All Departments</span>
+                        <button class="btn btn-primary" onclick="exportDepartments()">
+                            <i class="fas fa-file-export"></i> Export
+                        </button>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Name</th>
+                                    <th>Head</th>
+                                    <th>Phone</th>
+                                    <th>Email</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="departmentsTableBody"></tbody>
+                        </table>
+                        <div id="noDepartmentsMessage" class="no-data" style="display: none;">
+                            <i class="fas fa-database"></i>
+                            No departments found.
+                        </div>
+                    </div>
+                </div>
+
+                 <div id="delete-department-form" class="card hidden-section">
+                    <h2 class="card-title">Delete Department</h2>
+                    <div class="form-group">
+                        <label class="form-label" for="deleteDepartmentId">Department ID</label>
+                        <div class="search-container">
+                            <input type="text" class="form-control" id="deleteDepartmentId" placeholder="Enter Department ID">
+                            <button class="btn btn-danger" onclick="confirmDeleteDepartment()">
+                                <i class="fas fa-trash"></i> Delete
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="staff-management" class="management-section">
+                <div class="card">
+                    <h2 class="card-title">Staff Management</h2>
+                    <div class="submenu">
+                        <button class="submenu-btn" onclick="showStaffForm('add')"><i class="fas fa-plus"></i> Add New Staff</button>
+                        <button class="submenu-btn" onclick="showStaffForm('update')"><i class="fas fa-edit"></i> Update Staff</button>
+                        <button class="submenu-btn" onclick="showAllStaff()"><i class="fas fa-list"></i> View All Staff</button>
+                        <button class="submenu-btn btn-danger" onclick="showStaffDelete()"><i class="fas fa-trash"></i> Delete Staff</button>
+                    </div>
+                </div>
+                <div id="add-staff-form" class="card hidden-section">
+                    <h2 class="card-title">Add New Staff Member</h2>
+                    <form id="staffForm" onsubmit="event.preventDefault(); addStaff();">
+                        <div class="form-group">
+                            <label class="form-label" for="staffName">Full Name</label>
+                            <input type="text" class="form-control" id="staffName" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="staffRole">Role</label>
+                            <input type="text" class="form-control" id="staffRole" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="staffDepartment">Department</label>
+                            <select class="form-control" id="staffDepartment">
+                                <option value="">Select Department (Optional)</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="staffPhone">Phone</label>
+                            <input type="tel" class="form-control" id="staffPhone">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="staffEmail">Email</label>
+                            <input type="email" class="form-control" id="staffEmail">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="staffAddress">Address</label>
+                            <textarea class="form-control" id="staffAddress" rows="3"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="staffHireDate">Hire Date</label>
+                            <input type="date" class="form-control" id="staffHireDate">
+                        </div>
+                        <div class="action-buttons">
+                            <button type="submit" class="btn btn-success">
+                                <i class="fas fa-save"></i> Save Staff
+                            </button>
+                            <button type="button" class="btn btn-danger" onclick="hideStaffForm('add')">
+                                <i class="fas fa-times"></i> Cancel
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <div id="update-staff-form" class="card hidden-section">
+                    <h2 class="card-title">Update Staff Information</h2>
+                    <div class="form-group">
+                        <label class="form-label" for="updateStaffId">Staff ID</label>
+                        <div class="search-container">
+                            <input type="text" class="form-control" id="updateStaffId" placeholder="Enter Staff ID">
+                            <button class="btn btn-primary" onclick="loadStaffForUpdate()">
+                                <i class="fas fa-search"></i> Load Staff
+                            </button>
+                        </div>
+                    </div>
+                    <form id="updateStaffForm" class="hidden-section" onsubmit="event.preventDefault(); updateStaff();">
+                        <div class="form-group">
+                            <label class="form-label" for="updateStaffName">Full Name</label>
+                            <input type="text" class="form-control" id="updateStaffName" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="updateStaffRole">Role</label>
+                            <input type="text" class="form-control" id="updateStaffRole" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="updateStaffDepartment">Department</label>
+                            <select class="form-control" id="updateStaffDepartment">
+                                <option value="">Select Department (Optional)</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="updateStaffPhone">Phone</label>
+                            <input type="tel" class="form-control" id="updateStaffPhone">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="updateStaffEmail">Email</label>
+                            <input type="email" class="form-control" id="updateStaffEmail">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="updateStaffAddress">Address</label>
+                            <textarea class="form-control" id="updateStaffAddress" rows="3"></textarea>
+                        </div>
+                        <div class="action-buttons">
+                            <button type="submit" class="btn btn-success">
+                                <i class="fas fa-save"></i> Update Staff
+                            </button>
+                            <button type="button" class="btn btn-danger" onclick="hideStaffForm('update')">
+                                <i class="fas fa-times"></i> Cancel
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <div id="staff-list" class="card hidden-section">
+                    <div class="card-title">
+                        <span>All Staff Members</span>
+                        <button class="btn btn-primary" onclick="exportStaff()">
+                            <i class="fas fa-file-export"></i> Export
+                        </button>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Name</th>
+                                    <th>Role</th>
+                                    <th>Department</th>
+                                    <th>Phone</th>
+                                    <th>Email</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="staffTableBody"></tbody>
+                        </table>
+                        <div id="noStaffMessage" class="no-data" style="display: none;">
+                            <i class="fas fa-database"></i>
+                            No staff members found.
+                        </div>
+                    </div>
+                </div>
+
+                <div id="delete-staff-form" class="card hidden-section">
+                    <h2 class="card-title">Delete Staff Member</h2>
+                    <div class="form-group">
+                        <label class="form-label" for="deleteStaffId">Staff ID</label>
+                        <div class="search-container">
+                            <input type="text" class="form-control" id="deleteStaffId" placeholder="Enter Staff ID">
+                            <button class="btn btn-danger" onclick="confirmDeleteStaff()">
+                                <i class="fas fa-trash"></i> Delete
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="insurance-management" class="management-section">
+                <div class="card">
+                    <h2 class="card-title">Insurance Management</h2>
+                    <div class="submenu">
+                        <button class="submenu-btn" onclick="showInsuranceForm('add')"><i class="fas fa-plus"></i> Add New Provider</button>
+                        <button class="submenu-btn" onclick="showInsuranceForm('update')"><i class="fas fa-edit"></i> Update Provider</button>
+                        <button class="submenu-btn" onclick="showAllInsuranceProviders()"><i class="fas fa-list"></i> View All Providers</button>
+                        <button class="submenu-btn btn-danger" onclick="showInsuranceDelete()"><i class="fas fa-trash"></i> Delete Provider</button>
+                    </div>
+                </div>
+                 <div id="add-insurance-form" class="card hidden-section">
+                    <h2 class="card-title">Add New Insurance Provider</h2>
+                    <form id="insuranceProviderForm" onsubmit="event.preventDefault(); addInsuranceProvider();">
+                        <div class="form-group">
+                            <label class="form-label" for="insuranceProviderName">Provider Name</label>
+                            <input type="text" class="form-control" id="insuranceProviderName" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="insuranceContactPerson">Contact Person</label>
+                            <input type="text" class="form-control" id="insuranceContactPerson">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="insurancePhone">Phone</label>
+                            <input type="tel" class="form-control" id="insurancePhone">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="insuranceEmail">Email</label>
+                            <input type="email" class="form-control" id="insuranceEmail">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="insuranceAddress">Address</label>
+                            <textarea class="form-control" id="insuranceAddress" rows="3"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="insuranceWebsite">Website</label>
+                            <input type="url" class="form-control" id="insuranceWebsite">
+                        </div>
+                        <div class="action-buttons">
+                            <button type="submit" class="btn btn-success">
+                                <i class="fas fa-save"></i> Save Provider
+                            </button>
+                            <button type="button" class="btn btn-danger" onclick="hideInsuranceForm('add')">
+                                <i class="fas fa-times"></i> Cancel
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <div id="update-insurance-form" class="card hidden-section">
+                    <h2 class="card-title">Update Insurance Provider Information</h2>
+                    <div class="form-group">
+                        <label class="form-label" for="updateInsuranceProviderId">Provider ID</label>
+                        <div class="search-container">
+                            <input type="text" class="form-control" id="updateInsuranceProviderId" placeholder="Enter Provider ID">
+                            <button class="btn btn-primary" onclick="loadInsuranceProviderForUpdate()">
+                                <i class="fas fa-search"></i> Load Provider
+                            </button>
+                        </div>
+                    </div>
+                    <form id="updateInsuranceProviderForm" class="hidden-section" onsubmit="event.preventDefault(); updateInsuranceProvider();">
+                        <div class="form-group">
+                            <label class="form-label" for="updateInsuranceProviderName">Provider Name</label>
+                            <input type="text" class="form-control" id="updateInsuranceProviderName" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="updateInsuranceContactPerson">Contact Person</label>
+                            <input type="text" class="form-control" id="updateInsuranceContactPerson">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="updateInsurancePhone">Phone</label>
+                            <input type="tel" class="form-control" id="updateInsurancePhone">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="updateInsuranceEmail">Email</label>
+                            <input type="email" class="form-control" id="updateInsuranceEmail">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="updateInsuranceAddress">Address</label>
+                            <textarea class="form-control" id="updateInsuranceAddress" rows="3"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="updateInsuranceWebsite">Website</label>
+                            <input type="url" class="form-control" id="updateInsuranceWebsite">
+                        </div>
+                        <div class="action-buttons">
+                            <button type="submit" class="btn btn-success">
+                                <i class="fas fa-save"></i> Update Provider
+                            </button>
+                            <button type="button" class="btn btn-danger" onclick="hideInsuranceForm('update')">
+                                <i class="fas fa-times"></i> Cancel
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <div id="insurance-list" class="card hidden-section">
+                    <div class="card-title">
+                        <span>All Insurance Providers</span>
+                        <button class="btn btn-primary" onclick="exportInsuranceProviders()">
+                            <i class="fas fa-file-export"></i> Export
+                        </button>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Name</th>
+                                    <th>Contact Person</th>
+                                    <th>Phone</th>
+                                    <th>Email</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="insuranceProvidersTableBody"></tbody>
+                        </table>
+                        <div id="noInsuranceProvidersMessage" class="no-data" style="display: none;">
+                            <i class="fas fa-database"></i>
+                            No insurance providers found.
+                        </div>
+                    </div>
+                </div>
+
+                <div id="delete-insurance-form" class="card hidden-section">
+                    <h2 class="card-title">Delete Insurance Provider</h2>
+                    <div class="form-group">
+                        <label class="form-label" for="deleteInsuranceProviderId">Provider ID</label>
+                        <div class="search-container">
+                            <input type="text" class="form-control" id="deleteInsuranceProviderId" placeholder="Enter Provider ID">
+                            <button class="btn btn-danger" onclick="confirmDeleteInsuranceProvider()">
+                                <i class="fas fa-trash"></i> Delete
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="test-management" class="management-section">
+                <div class="card">
+                    <h2 class="card-title">Test Management</h2>
+                    <div class="submenu">
+                        <button class="submenu-btn" onclick="showTestTypeForm('add')"><i class="fas fa-plus"></i> Add New Test Type</button>
+                        <button class="submenu-btn" onclick="showTestTypeForm('update')"><i class="fas fa-edit"></i> Update Test Type</button>
+                        <button class="submenu-btn" onclick="showAllTestTypes()"><i class="fas fa-list"></i> View All Test Types</button>
+                        <button class="submenu-btn btn-danger" onclick="showTestTypeDelete()"><i class="fas fa-trash"></i> Delete Test Type</button>
+                        <button class="submenu-btn" onclick="showPatientTestForm('order')"><i class="fas fa-notes-medical"></i> Order Test for Patient</button>
+                        <button class="submenu-btn" onclick="showPatientTestForm('update')"><i class="fas fa-vial"></i> Update Patient Test</button>
+                        <button class="submenu-btn" onclick="showAllPatientTests()"><i class="fas fa-list-alt"></i> View All Patient Tests</button>
+                        <button class="submenu-btn btn-danger" onclick="showPatientTestDelete()"><i class="fas fa-times-circle"></i> Delete Patient Test</button>
+                    </div>
+                </div>
+                 <div id="add-test-type-form" class="card hidden-section">
+                    <h2 class="card-title">Add New Test Type</h2>
+                    <form id="testTypeForm" onsubmit="event.preventDefault(); addTestType();">
+                        <div class="form-group">
+                            <label class="form-label" for="testTypeName">Test Name</label>
+                            <input type="text" class="form-control" id="testTypeName" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="testTypeCost">Cost</label>
+                            <input type="number" step="0.01" class="form-control" id="testTypeCost" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="testTypeDescription">Description</label>
+                            <textarea class="form-control" id="testTypeDescription" rows="3"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="testTypePreparation">Preparation Instructions</label>
+                            <textarea class="form-control" id="testTypePreparation" rows="3"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="testTypeTurnaround">Turnaround Time</label>
+                            <input type="text" class="form-control" id="testTypeTurnaround" placeholder="e.g., 24 hours, 3-5 days">
+                        </div>
+                        <div class="action-buttons">
+                            <button type="submit" class="btn btn-success">
+                                <i class="fas fa-save"></i> Save Test Type
+                            </button>
+                            <button type="button" class="btn btn-danger" onclick="hideTestTypeForm('add')">
+                                <i class="fas fa-times"></i> Cancel
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <div id="update-test-type-form" class="card hidden-section">
+                    <h2 class="card-title">Update Test Type</h2>
+                    <div class="form-group">
+                        <label class="form-label" for="updateTestTypeId">Test Type ID</label>
+                        <div class="search-container">
+                            <input type="text" class="form-control" id="updateTestTypeId" placeholder="Enter Test Type ID">
+                            <button class="btn btn-primary" onclick="loadTestTypeForUpdate()">
+                                <i class="fas fa-search"></i> Load Test Type
+                            </button>
+                        </div>
+                    </div>
+                    <form id="updateTestTypeForm" class="hidden-section" onsubmit="event.preventDefault(); updateTestType();">
+                        <div class="form-group">
+                            <label class="form-label" for="updateTestTypeName">Test Name</label>
+                            <input type="text" class="form-control" id="updateTestTypeName" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="updateTestTypeCost">Cost</label>
+                            <input type="number" step="0.01" class="form-control" id="updateTestTypeCost" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="updateTestTypeDescription">Description</label>
+                            <textarea class="form-control" id="updateTestTypeDescription" rows="3"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="updateTestTypePreparation">Preparation Instructions</label>
+                            <textarea class="form-control" id="updateTestTypePreparation" rows="3"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="updateTestTypeTurnaround">Turnaround Time</label>
+                            <input type="text" class="form-control" id="updateTestTypeTurnaround" placeholder="e.g., 24 hours, 3-5 days">
+                        </div>
+                        <div class="action-buttons">
+                            <button type="submit" class="btn btn-success">
+                                <i class="fas fa-save"></i> Update Test Type
+                            </button>
+                            <button type="button" class="btn btn-danger" onclick="hideTestTypeForm('update')">
+                                <i class="fas fa-times"></i> Cancel
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <div id="test-type-list" class="card hidden-section">
+                    <div class="card-title">
+                        <span>All Test Types</span>
+                        <button class="btn btn-primary" onclick="exportTestTypes()">
+                            <i class="fas fa-file-export"></i> Export
+                        </button>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Name</th>
+                                    <th>Cost</th>
+                                    <th>Description</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="testTypesTableBody"></tbody>
+                        </table>
+                        <div id="noTestTypesMessage" class="no-data" style="display: none;">
+                            <i class="fas fa-database"></i>
+                            No test types found.
+                        </div>
+                    </div>
+                </div>
+
+                 <div id="delete-test-type-form" class="card hidden-section">
+                    <h2 class="card-title">Delete Test Type</h2>
+                    <div class="form-group">
+                        <label class="form-label" for="deleteTestTypeId">Test Type ID</label>
+                        <div class="search-container">
+                            <input type="text" class="form-control" id="deleteTestTypeId" placeholder="Enter Test Type ID">
+                            <button class="btn btn-danger" onclick="confirmDeleteTestType()">
+                                <i class="fas fa-trash"></i> Delete
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="order-patient-test-form" class="card hidden-section">
+                    <h2 class="card-title">Order Test for Patient</h2>
+                    <form id="patientTestOrderForm" onsubmit="event.preventDefault(); orderPatientTest();">
+                        <div class="form-group">
+                            <label class="form-label" for="patientTestPatient">Patient</label>
+                            <select class="form-control" id="patientTestPatient" required>
+                                <option value="">Select Patient</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="patientTestDoctor">Ordering Doctor</label>
+                            <select class="form-control" id="patientTestDoctor">
+                                <option value="">Select Doctor (Optional)</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="patientTestType">Test Type</label>
+                            <select class="form-control" id="patientTestType" required>
+                                <option value="">Select Test Type</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="patientTestDateOrdered">Date Ordered</label>
+                            <input type="date" class="form-control" id="patientTestDateOrdered">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="patientTestNotes">Notes</label>
+                            <textarea class="form-control" id="patientTestNotes" rows="3"></textarea>
+                        </div>
+                        <div class="action-buttons">
+                            <button type="submit" class="btn btn-success">
+                                <i class="fas fa-save"></i> Order Test
+                            </button>
+                            <button type="button" class="btn btn-danger" onclick="hidePatientTestForm('order')">
+                                <i class="fas fa-times"></i> Cancel
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <div id="update-patient-test-form" class="card hidden-section">
+                    <h2 class="card-title">Update Patient Test</h2>
+                    <div class="form-group">
+                        <label class="form-label" for="updatePatientTestId">Patient Test ID</label>
+                        <div class="search-container">
+                            <input type="text" class="form-control" id="updatePatientTestId" placeholder="Enter Patient Test ID">
+                            <button class="btn btn-primary" onclick="loadPatientTestForUpdate()">
+                                <i class="fas fa-search"></i> Load Test
+                            </button>
+                        </div>
+                    </div>
+                    <form id="updatePatientTestForm" class="hidden-section" onsubmit="event.preventDefault(); updatePatientTest();">
+                        <div class="form-group">
+                            <label class="form-label" for="updatePatientTestPatientName">Patient Name</label>
+                            <input type="text" class="form-control" id="updatePatientTestPatientName" disabled>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="updatePatientTestTestName">Test Type</label>
+                            <input type="text" class="form-control" id="updatePatientTestTestName" disabled>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="updatePatientTestDateOrdered">Date Ordered</label>
+                            <input type="date" class="form-control" id="updatePatientTestDateOrdered" disabled>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="updatePatientTestDateCompleted">Date Completed</label>
+                            <input type="date" class="form-control" id="updatePatientTestDateCompleted">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="updatePatientTestResults">Results</label>
+                            <textarea class="form-control" id="updatePatientTestResults" rows="5"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="updatePatientTestStatus">Status</label>
+                            <select class="form-control" id="updatePatientTestStatus" required>
+                                <option value="Ordered">Ordered</option>
+                                <option value="InProgress">In Progress</option>
+                                <option value="Completed">Completed</option>
+                                <option value="Cancelled">Cancelled</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="updatePatientTestNotes">Notes</label>
+                            <textarea class="form-control" id="updatePatientTestNotes" rows="3"></textarea>
+                        </div>
+                        <div class="action-buttons">
+                            <button type="submit" class="btn btn-success">
+                                <i class="fas fa-save"></i> Update Test
+                            </button>
+                            <button type="button" class="btn btn-danger" onclick="hidePatientTestForm('update')">
+                                <i class="fas fa-times"></i> Cancel
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <div id="patient-test-list" class="card hidden-section">
+                    <div class="card-title">
+                        <span>All Patient Tests</span>
+                        <button class="btn btn-primary" onclick="exportPatientTests()">
+                            <i class="fas fa-file-export"></i> Export
+                        </button>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Patient</th>
+                                    <th>Test Type</th>
+                                    <th>Doctor</th>
+                                    <th>Date Ordered</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="patientTestsTableBody"></tbody>
+                        </table>
+                        <div id="noPatientTestsMessage" class="no-data" style="display: none;">
+                            <i class="fas fa-database"></i>
+                            No patient tests found.
+                        </div>
+                    </div>
+                </div>
+
+                <div id="delete-patient-test-form" class="card hidden-section">
+                    <h2 class="card-title">Delete Patient Test</h2>
+                    <div class="form-group">
+                        <label class="form-label" for="deletePatientTestId">Patient Test ID</label>
+                        <div class="search-container">
+                            <input type="text" class="form-control" id="deletePatientTestId" placeholder="Enter Patient Test ID">
+                            <button class="btn btn-danger" onclick="confirmDeletePatientTest()">
+                                <i class="fas fa-trash"></i> Delete
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="inventory-management" class="management-section">
+                <div class="card">
+                    <h2 class="card-title">Inventory Management</h2>
+                    <div class="submenu">
+                        <button class="submenu-btn" onclick="showInventoryForm('add')"><i class="fas fa-plus"></i> Add New Item</button>
+                        <button class="submenu-btn" onclick="showInventoryForm('update')"><i class="fas fa-edit"></i> Update Item</button>
+                        <button class="submenu-btn" onclick="showAllInventory()"><i class="fas fa-list"></i> View All Inventory</button>
+                        <button class="submenu-btn btn-warning" onclick="showLowStockItems()"><i class="fas fa-exclamation-triangle"></i> Low Stock Alert</button>
+                        <button class="submenu-btn btn-danger" onclick="showInventoryDelete()"><i class="fas fa-trash"></i> Delete Item</button>
+                    </div>
+                </div>
+                <div id="add-inventory-form" class="card hidden-section">
+                    <h2 class="card-title">Add New Inventory Item</h2>
+                    <form id="inventoryItemForm" onsubmit="event.preventDefault(); addInventoryItem();">
+                        <div class="form-group">
+                            <label class="form-label" for="inventoryName">Item Name</label>
+                            <input type="text" class="form-control" id="inventoryName" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="inventoryCategory">Category</label>
+                            <input type="text" class="form-control" id="inventoryCategory" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="inventoryQuantity">Quantity</label>
+                            <input type="number" class="form-control" id="inventoryQuantity" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="inventoryUnit">Unit</label>
+                            <input type="text" class="form-control" id="inventoryUnit" placeholder="e.g., box, vial, piece" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="inventoryPrice">Price per Unit</label>
+                            <input type="number" step="0.01" class="form-control" id="inventoryPrice" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="inventorySupplier">Supplier</label>
+                            <input type="text" class="form-control" id="inventorySupplier">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="inventoryExpiryDate">Expiry Date</label>
+                            <input type="date" class="form-control" id="inventoryExpiryDate">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="inventoryThreshold">Low Stock Threshold</label>
+                            <input type="number" class="form-control" id="inventoryThreshold" value="10">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="inventoryLocation">Location</label>
+                            <input type="text" class="form-control" id="inventoryLocation">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="inventoryDescription">Description</label>
+                            <textarea class="form-control" id="inventoryDescription" rows="3"></textarea>
+                        </div>
+                        <div class="action-buttons">
+                            <button type="submit" class="btn btn-success">
+                                <i class="fas fa-save"></i> Save Item
+                            </button>
+                            <button type="button" class="btn btn-danger" onclick="hideInventoryForm('add')">
+                                <i class="fas fa-times"></i> Cancel
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <div id="update-inventory-form" class="card hidden-section">
+                    <h2 class="card-title">Update Inventory Item</h2>
+                    <div class="form-group">
+                        <label class="form-label" for="updateInventoryItemId">Item ID</label>
+                        <div class="search-container">
+                            <input type="text" class="form-control" id="updateInventoryItemId" placeholder="Enter Item ID">
+                            <button class="btn btn-primary" onclick="loadInventoryItemForUpdate()">
+                                <i class="fas fa-search"></i> Load Item
+                            </button>
+                        </div>
+                    </div>
+                    <form id="updateInventoryItemForm" class="hidden-section" onsubmit="event.preventDefault(); updateInventoryItem();">
+                         <div class="form-group">
+                            <label class="form-label" for="updateInventoryName">Item Name</label>
+                            <input type="text" class="form-control" id="updateInventoryName" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="updateInventoryCategory">Category</label>
+                            <input type="text" class="form-control" id="updateInventoryCategory" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="updateInventoryQuantity">Quantity</label>
+                            <input type="number" class="form-control" id="updateInventoryQuantity" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="updateInventoryUnit">Unit</label>
+                            <input type="text" class="form-control" id="updateInventoryUnit" placeholder="e.g., box, vial, piece" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="updateInventoryPrice">Price per Unit</label>
+                            <input type="number" step="0.01" class="form-control" id="updateInventoryPrice" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="updateInventorySupplier">Supplier</label>
+                            <input type="text" class="form-control" id="updateInventorySupplier">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="updateInventoryExpiryDate">Expiry Date</label>
+                            <input type="date" class="form-control" id="updateInventoryExpiryDate">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="updateInventoryThreshold">Low Stock Threshold</label>
+                            <input type="number" class="form-control" id="updateInventoryThreshold">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="updateInventoryLocation">Location</label>
+                            <input type="text" class="form-control" id="updateInventoryLocation">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="updateInventoryDescription">Description</label>
+                            <textarea class="form-control" id="updateInventoryDescription" rows="3"></textarea>
+                        </div>
+                        <div class="action-buttons">
+                            <button type="submit" class="btn btn-success">
+                                <i class="fas fa-save"></i> Update Item
+                            </button>
+                            <button type="button" class="btn btn-danger" onclick="hideInventoryForm('update')">
+                                <i class="fas fa-times"></i> Cancel
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <div id="inventory-list" class="card hidden-section">
+                    <div class="card-title">
+                        <span>All Inventory Items</span>
+                        <button class="btn btn-primary" onclick="exportInventory()">
+                            <i class="fas fa-file-export"></i> Export
+                        </button>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Name</th>
+                                    <th>Category</th>
+                                    <th>Quantity</th>
+                                    <th>Unit</th>
+                                    <th>Price</th>
+                                    <th>Supplier</th>
+                                    <th>Expiry Date</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="inventoryTableBody"></tbody>
+                        </table>
+                        <div id="noInventoryMessage" class="no-data" style="display: none;">
+                            <i class="fas fa-database"></i>
+                            No inventory items found.
+                        </div>
+                    </div>
+                </div>
+
+                <div id="low-stock-items" class="card hidden-section">
+                    <h2 class="card-title">Low Stock Items</h2>
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Name</th>
+                                    <th>Category</th>
+                                    <th>Quantity</th>
+                                    <th>Threshold</th>
+                                    <th>Unit</th>
+                                    <th>Supplier</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="lowStockItemsTableBody"></tbody>
+                        </table>
+                        <div id="noLowStockMessage" class="no-data" style="display: none;">
+                            <i class="fas fa-check-circle"></i>
+                            All inventory items are adequately stocked.
+                        </div>
+                    </div>
+                </div>
+
+                <div id="delete-inventory-form" class="card hidden-section">
+                    <h2 class="card-title">Delete Inventory Item</h2>
+                    <div class="form-group">
+                        <label class="form-label" for="deleteInventoryItemId">Item ID</label>
+                        <div class="search-container">
+                            <input type="text" class="form-control" id="deleteInventoryItemId" placeholder="Enter Item ID">
+                            <button class="btn btn-danger" onclick="confirmDeleteInventoryItem()">
+                                <i class="fas fa-trash"></i> Delete
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="hospitalNameModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeHospitalNameModal()">&times;</span>
+            <h2>Enter Hospital Name</h2>
+            <div class="form-group">
+                <input type="text" class="form-control" id="hospitalNameInput" placeholder="Enter your hospital name">
+            </div>
+            <button class="btn btn-primary" onclick="saveHospitalName()">
+                <i class="fas fa-save"></i> Save
+            </button>
+        </div>
+    </div>
+
+    <div id="patientDetailsModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('patientDetailsModal')">&times;</span>
+            <h2>Patient Details</h2>
+            <div id="patientDetailsContent"></div>
+        </div>
+    </div>
+
+    <div id="doctorDetailsModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('doctorDetailsModal')">&times;</span>
+            <h2>Doctor Details</h2>
+            <div id="doctorDetailsContent"></div>
+        </div>
+    </div>
+
+    <div id="appointmentDetailsModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('appointmentDetailsModal')">&times;</span>
+            <h2>Appointment Details</h2>
+            <div id="appointmentDetailsContent"></div>
+        </div>
+    </div>
+
+    <div id="billDetailsModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('billDetailsModal')">&times;</span>
+            <h2>Bill Details</h2>
+            <div id="billDetailsContent"></div>
+        </div>
+    </div>
+
+    <div id="medicalRecordDetailsModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('medicalRecordDetailsModal')">&times;</span>
+            <h2>Medical Record Details</h2>
+            <div id="medicalRecordDetailsContent"></div>
+        </div>
+    </div>
+
+    <div id="departmentDetailsModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('departmentDetailsModal')">&times;</span>
+            <h2>Department Details</h2>
+            <div id="departmentDetailsContent"></div>
+        </div>
+    </div>
+
+    <div id="staffDetailsModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('staffDetailsModal')">&times;</span>
+            <h2>Staff Member Details</h2>
+            <div id="staffDetailsContent"></div>
+        </div>
+    </div>
+
+    <div id="insuranceDetailsModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('insuranceDetailsModal')">&times;</span>
+            <h2>Insurance Provider Details</h2>
+            <div id="insuranceDetailsContent"></div>
+        </div>
+    </div>
+
+    <div id="testDetailsModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('testDetailsModal')">&times;</span>
+            <h2>Test Type Details</h2>
+            <div id="testDetailsContent"></div>
+        </div>
+    </div>
+
+    <div id="patientTestDetailsModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('patientTestDetailsModal')">&times;</span>
+            <h2>Patient Test Details</h2>
+            <div id="patientTestDetailsContent"></div>
+        </div>
+    </div>
+
+    <div id="inventoryDetailsModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('inventoryDetailsModal')">&times;</span>
+            <h2>Inventory Item Details</h2>
+            <div id="inventoryDetailsContent"></div>
+        </div>
+    </div>
+    <button id="darkModeToggle">Toggle Dark Mode</button>
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>
