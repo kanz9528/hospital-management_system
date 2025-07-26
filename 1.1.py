@@ -16,10 +16,10 @@ CORS(app) # Enable CORS for all origins by default (for development)
 
 # Database configuration
 db_config = {
-    "host": os.getenv('DB_HOST', 'localhost'),
-    "port": int(os.getenv('DB_PORT', 3306)),
-    "user": os.getenv('DB_USER', 'user'),
-    "password": os.getenv('DB_PASSWORD', 'Iron_Men'),
+    "host": os.getenv('DB_HOST', 'mysql-31a9d479-kanhaiyabhatt9528-c091.i.aivencloud.co'),
+    "port": int(os.getenv('DB_PORT', 21828 )),
+    "user": os.getenv('DB_USER', 'Kanhaiya12'),
+    "password": os.getenv('DB_PASSWORD', 'AVNS_8CVgajbEJN3nVyNXAAW  '),
     "database": os.getenv('DB_NAME', 'hospital'),
     "charset": "utf8mb4",
     "cursorclass": pymysql.cursors.DictCursor
