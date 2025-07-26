@@ -13,7 +13,8 @@ load_dotenv()
 # Flask app initialization
 app = Flask(__name__)
 CORS(app) # Enable CORS for all origins by default (for development)
-
+def index():
+    return render_template('index.html')
 # Database configuration
 db_config = {
     "host": os.getenv('DB_HOST', 'mysql-31a9d479-kanhaiyabhatt9528-c091.i.aivencloud.co'),
