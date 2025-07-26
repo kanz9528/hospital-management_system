@@ -7,7 +7,7 @@ import io
 import json
 from flask_cors import CORS # Import CORS
 
-# Load environment variables from a .env file
+
 load_dotenv()
 
 # Flask app initialization
