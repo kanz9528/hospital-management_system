@@ -513,9 +513,14 @@ document.addEventListener('DOMContentLoaded', async function () {
 
     // Set hospital name
     if (!localStorage.getItem('hospitalName')) {
-        hospitalNameModal.style.display = 'block';
+        if (hospitalNameModal) {
+            hospitalNameModal.style.display = 'block';
+        }
     } else {
-        document.getElementById('hospitalName').textContent = localStorage.getItem('hospitalName');
+        const hospitalNameEl = document.getElementById('hospitalName');
+        if (hospitalNameEl) {
+            hospitalNameEl.textContent = localStorage.getItem('hospitalName');
+        }
     }
 
     // Dark mode toggle
