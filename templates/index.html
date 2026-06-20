@@ -2,7 +2,8 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="theme-color" content="#2c3e50">
     <title>Hospital Management System</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
@@ -13,9 +14,14 @@
 </head>
 <body>
     <div class="header">
-        <div class="logo" id="hospitalName">Hospital Management System</div>
+        <div class="header-left">
+            <button type="button" class="menu-btn" id="mobileMenuBtn" aria-label="Open navigation menu" aria-expanded="false" aria-controls="sidebar">
+                <i class="fas fa-bars" id="mobileMenuIcon"></i>
+            </button>
+            <div class="logo" id="hospitalName">Hospital Management System</div>
+        </div>
         <div class="toggle-container">
-            <span>Night Mode</span>
+            <span class="toggle-label">Night Mode</span>
             <label class="toggle-switch">
                 <input type="checkbox" id="darkModeToggle">
                 <span class="slider"></span>
@@ -23,10 +29,15 @@
         </div>
     </div>
 
+    <div class="sidebar-overlay" id="sidebarOverlay" aria-hidden="true"></div>
+
     <div class="container">
         <div class="sidebar" id="sidebar">
-            <button class="hide-menu-btn" id="hideMenuBtn" title="Collapse Menu">
+            <button type="button" class="hide-menu-btn" id="hideMenuBtn" title="Collapse Menu" aria-label="Collapse sidebar">
                 <i class="fas fa-chevron-left"></i>
+            </button>
+            <button type="button" class="mobile-close-btn" id="mobileCloseBtn" aria-label="Close navigation menu">
+                <i class="fas fa-times"></i>
             </button>
             <div class="nav-menu" id="navMenu">
                 <div class="nav-item">
