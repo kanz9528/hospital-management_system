@@ -850,7 +850,7 @@ input:checked+.slider:before {
     }
 
     .sidebar.mobile-open {
-        transform: translateX(0);
+        transform: translateX(0) !important;
     }
 
     .sidebar.collapsed {
