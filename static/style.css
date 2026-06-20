@@ -489,10 +489,14 @@ textarea.form-control {
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
     position: relative;
     height: 320px;
+    display: flex;
+    flex-direction: column;
 }
 
 .chart-container canvas {
     max-width: 100%;
+    flex-grow: 1;
+    min-height: 0 !important;
 }
 
 .toggle-container {
@@ -666,10 +670,14 @@ input:checked+.slider:before {
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
     height: 300px;
     position: relative;
+    display: flex;
+    flex-direction: column;
 }
 
 .visualization-card canvas {
     max-width: 100%;
+    flex-grow: 1;
+    min-height: 0 !important;
 }
 
 .hidden-section {
