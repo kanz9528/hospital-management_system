@@ -15,7 +15,7 @@
 <body>
     <div class="header">
         <div class="header-left">
-            <button type="button" class="menu-btn" id="mobileMenuBtn" aria-label="Open navigation menu" aria-expanded="false" aria-controls="sidebar">
+            <button type="button" class="menu-btn" id="mobileMenuBtn" aria-label="Open navigation menu" aria-expanded="false" aria-controls="sidebar" onclick="toggleMobileSidebar()">
                 <i class="fas fa-bars" id="mobileMenuIcon"></i>
             </button>
             <div class="logo" id="hospitalName">Hospital Management System</div>
@@ -29,14 +29,14 @@
         </div>
     </div>
 
-    <div class="sidebar-overlay" id="sidebarOverlay" aria-hidden="true"></div>
+    <div class="sidebar-overlay" id="sidebarOverlay" aria-hidden="true" onclick="closeMobileSidebar()"></div>
 
     <div class="container">
         <div class="sidebar" id="sidebar">
             <button type="button" class="hide-menu-btn" id="hideMenuBtn" title="Collapse Menu" aria-label="Collapse sidebar">
                 <i class="fas fa-chevron-left"></i>
             </button>
-            <button type="button" class="mobile-close-btn" id="mobileCloseBtn" aria-label="Close navigation menu">
+            <button type="button" class="mobile-close-btn" id="mobileCloseBtn" aria-label="Close navigation menu" onclick="closeMobileSidebar()">
                 <i class="fas fa-times"></i>
             </button>
             <div class="nav-menu" id="navMenu">
