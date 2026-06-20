@@ -1,6 +1,5 @@
 // Base URL for your Flask API
-const API_BASE_URL = 'http://127.0.0.1:5000/api';
-const MOBILE_BREAKPOINT = 992;
+const API_BASE_URL = '/api';
 
 // Global variables for pagination and cached data
 let currentPage = {
@@ -54,88 +53,11 @@ darkModeToggle.addEventListener('click', () => {
 });
 
 const hideMenuBtn = document.getElementById('hideMenuBtn');
-const mobileMenuBtn = document.getElementById('mobileMenuBtn');
-const mobileMenuIcon = document.getElementById('mobileMenuIcon');
-const mobileCloseBtn = document.getElementById('mobileCloseBtn');
-const sidebarOverlay = document.getElementById('sidebarOverlay');
 const sidebar = document.getElementById('sidebar');
 const mainContent = document.getElementById('mainContent');
 const hospitalNameModal = document.getElementById('hospitalNameModal');
 const allSections = document.querySelectorAll('.management-section');
 const dashboardSection = document.getElementById('dashboard-section');
-
-// --- Mobile Navigation ---
-
-function isMobileView() {
-    return window.innerWidth <= MOBILE_BREAKPOINT;
-}
-
-function openMobileSidebar() {
-    if (!isMobileView()) return;
-    sidebar.classList.add('mobile-open');
-    sidebarOverlay.classList.add('active');
-    sidebarOverlay.setAttribute('aria-hidden', 'false');
-    document.body.classList.add('sidebar-open');
-    if (mobileMenuBtn) {
-        mobileMenuBtn.setAttribute('aria-expanded', 'true');
-        mobileMenuBtn.setAttribute('aria-label', 'Close navigation menu');
-    }
-    if (mobileMenuIcon) {
-        mobileMenuIcon.classList.remove('fa-bars');
-        mobileMenuIcon.classList.add('fa-times');
-    }
-}
-
-function closeMobileSidebar() {
-    sidebar.classList.remove('mobile-open');
-    sidebarOverlay.classList.remove('active');
-    sidebarOverlay.setAttribute('aria-hidden', 'true');
-    document.body.classList.remove('sidebar-open');
-    if (mobileMenuBtn) {
-        mobileMenuBtn.setAttribute('aria-expanded', 'false');
-        mobileMenuBtn.setAttribute('aria-label', 'Open navigation menu');
-    }
-    if (mobileMenuIcon) {
-        mobileMenuIcon.classList.remove('fa-times');
-        mobileMenuIcon.classList.add('fa-bars');
-    }
-}
-
-function toggleMobileSidebar() {
-    if (sidebar.classList.contains('mobile-open')) {
-        closeMobileSidebar();
-    } else {
-        openMobileSidebar();
-    }
-}
-
-function handleViewportChange() {
-    if (!isMobileView()) {
-        closeMobileSidebar();
-    } else {
-        sidebar.classList.remove('collapsed');
-        mainContent.classList.remove('expanded');
-    }
-    resizeActiveCharts();
-}
-
-function resizeActiveCharts() {
-    [
-        currentDashboardCharts,
-        currentPatientCharts,
-        currentDoctorCharts,
-        currentAppointmentCharts,
-        currentBillingCharts,
-        currentMedicalRecordCharts,
-        currentReportCharts
-    ].forEach(chartCache => {
-        Object.values(chartCache).forEach(chart => {
-            if (chart && typeof chart.resize === 'function') {
-                chart.resize();
-            }
-        });
-    });
-}
 
 // --- Utility Functions ---
 
@@ -553,37 +475,11 @@ document.addEventListener('DOMContentLoaded', async function () {
             }
         });
     }
-
-    if (mobileMenuBtn) {
-        mobileMenuBtn.addEventListener('click', toggleMobileSidebar);
-    }
-    if (mobileCloseBtn) {
-        mobileCloseBtn.addEventListener('click', closeMobileSidebar);
-    }
-    if (sidebarOverlay) {
-        sidebarOverlay.addEventListener('click', closeMobileSidebar);
-    }
-
-    document.addEventListener('keydown', (event) => {
-        if (event.key === 'Escape' && sidebar.classList.contains('mobile-open')) {
-            closeMobileSidebar();
-        }
-    });
-
-    let resizeTimer;
-    window.addEventListener('resize', () => {
-        clearTimeout(resizeTimer);
-        resizeTimer = setTimeout(handleViewportChange, 150);
-    });
-
-    handleViewportChange();
 });
 
 hideMenuBtn.addEventListener('click', function () {
-    if (isMobileView()) return;
     sidebar.classList.toggle('collapsed');
     mainContent.classList.toggle('expanded');
-    resizeActiveCharts();
 });
 
 darkModeToggle.addEventListener('change', function () {
@@ -674,7 +570,6 @@ function updateNavActive(activeId) {
 
 function logout() {
     if (confirm('Are you sure you want to exit?')) {
-        closeMobileSidebar();
         alert('Exiting Hospital Management System. Goodbye!');
         // In a real web app, you might clear session data or redirect to a login page.
         // window.close() might not work in all modern browsers due to security policies.
@@ -733,7 +628,6 @@ async function showDashboard() {
     hideAllSections();
     dashboardSection.classList.add('active');
     updateNavActive('dashboard');
-    closeMobileSidebar();
     await updateDashboardMetrics();
     updateDashboardCharts();
 }
@@ -888,7 +782,6 @@ function showSection(sectionId) {
 
     // Update active state of navigation links
     updateNavActive(sectionId);
-    closeMobileSidebar();
 
     // Specific actions for each section when shown
     if (sectionId === 'patient-management') {
